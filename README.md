@@ -1,0 +1,2 @@
+# StajerManagerProject
+StajerManager Project
