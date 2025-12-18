@@ -1,0 +1,35 @@
+{
+	"folders": [
+		{
+			"name": "Backend",
+			"path": "./Backend"
+		},
+		{
+			"name": "Frontend",
+			"path": "./Frontend"
+		}
+	],
+	"settings": {
+		"files.exclude": {
+			"**/.git": false,
+			"**/node_modules": true,
+			"**/bin": true,
+			"**/obj": true
+		},
+		"search.exclude": {
+			"**/node_modules": true,
+			"**/bin": true,
+			"**/obj": true
+		},
+		"powershell.cwd": "Backend"
+	},
+	"extensions": {
+		"recommendations": [
+			"ms-dotnettools.csharp",
+			"ms-dotnettools.csdevkit",
+			"dbaeumer.vscode-eslint",
+			"esbenp.prettier-vscode"
+		]
+	}
+}
+

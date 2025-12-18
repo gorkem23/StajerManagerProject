@@ -1,0 +1,147 @@
+/* #root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+.app-shell {
+  min-height: 100vh;
+  background-color: #f5f7fb;
+}
+
+.layout-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.app-navbar {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.app-navbar-inner {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 16px 0;
+}
+
+.app-navbar-logo {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.app-navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: auto;
+}
+
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 0.95rem;
+  color: #333;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+  background-color: rgba(0, 123, 255, 0.1);
+  color: #007bff;
+}
+
+.nav-link.active {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.nav-link.logout {
+  border: 1px solid #007bff;
+  background-color: transparent;
+}
+
+.nav-link.logout:hover {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.app-main {
+  padding: 32px 0 48px;
+}
+ */
+
+
+
+/* Kayan yazı animasyonu */
+.marquee-container {
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100%;
+  position: relative;
+}
+
+.marquee-text {
+  display: inline-block;
+  animation: marquee 20s linear infinite;
+  padding: 0 20px;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+/* Hover'da duraklatma (isteğe bağlı) */
+.marquee-container:hover .marquee-text {
+  animation-play-state: paused;
+}

@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zod Kullanım Rehberi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        h2 {
+            color: #34495e;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #ecf0f1;
+            font-size: 2em;
+        }
+        
+        h3 {
+            color: #7f8c8d;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e83e8c;
+        }
+        
+        pre {
+            background: #282c34;
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+            color: #abb2bf;
+            font-size: 0.9em;
+        }
+        
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        hr {
+            border: none;
+            border-top: 2px solid #ecf0f1;
+            margin: 30px 0;
+        }
+        
+        strong {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        .toc {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 30px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .toc h2 {
+            margin-top: 0;
+            border: none;
+            padding: 0;
+        }
+        
+        .toc ul {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        .toc a {
+            color: #34495e;
+            display: block;
+            padding: 5px 0;
+        }
+        
+        .toc a:hover {
+            color: #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Zod Kullanım Rehberi - Kapsamlı Eğitim</h1>
+<br>
+<br><h2>📚 İçindekiler</h2>
+<br><ul><li><a href="#zod-nedir">Zod Nedir?</a></li>
+<br><li><a href="#kurulum">Kurulum</a></li>
+<br><li><a href="#temel-kullanım">Temel Kullanım</a></li>
+<br><li><a href="#veri-tipleri">Veri Tipleri</a></li>
+<br><li><a href="#validasyon-metodları">Validasyon Metodları</a></li>
+<br><li><a href="#ileri-seviye-özellikler">İleri Seviye Özellikler</a></li>
+<br><li><a href="#react-hook-form-ile-entegrasyon">React Hook Form ile Entegrasyon</a></li>
+<br><li><a href="#pratik-örnekler">Pratik Örnekler</a></li>
+<br><li><a href="#hata-yönetimi">Hata Yönetimi</a></li>
+<br><li><a href="#best-practices">Best Practices</a></li>
+<br>
+<br><hr>
+<br>
+<br><h2>Zod Nedir?</h2>
+<br>
+<br><strong>Zod</strong>, TypeScript ve JavaScript için güçlü bir <strong>şema doğrulama (schema validation)</strong> kütüphanesidir. Temel amacı:
+<br>
+<br><li>✅ Veri doğrulama (validation)</li>
+<br><li>✅ TypeScript tip çıkarımı (type inference)</li>
+<br><li>✅ Runtime tip güvenliği</li>
+<br><li>✅ Kullanıcı dostu hata mesajları</li>
+<br>
+<br><h3>Neden Zod Kullanmalıyız?</h3>
+<br>
+<br><li><strong>Tip Güvenliği</strong>: Şemalarınızdan otomatik TypeScript tipleri üretir</li>
+<br><li><strong>Runtime Doğrulama</strong>: Çalışma zamanında verilerinizi kontrol eder</li>
+<br><li><strong>Kolay Kullanım</strong>: Okunabilir ve anlaşılır API</li>
+<br><li><strong>Form Entegrasyonu</strong>: React Hook Form, Formik gibi kütüphanelerle mükemmel uyum</li>
+<br><li><strong>Hata Mesajları</strong>: Özelleştirilebilir ve anlaşılır hata mesajları</li>
+<br>
+<br><hr>
+<br>
+<br><h2>Kurulum</h2>
+<br>
+<br>``<code>bash
+<br>npm install zod
+<br><h1>veya</h1>
+<br>yarn add zod
+<br><h1>veya</h1>
+<br>pnpm add zod
+<br></code>`<code>
+<br>
+<br>Projenizde zaten kurulu (v4.1.12). ✅
+<br>
+<br><hr>
+<br>
+<br><h2>Temel Kullanım</h2>
+<br>
+<br><h3>Basit Bir Şema Oluşturma</h3>
+<br>
+<br></code>`<code>typescript
+<br>import { z } from 'zod'
+<br>
+<br>// String şeması
+<br>const nameSchema = z.string()
+<br>
+<br>// Doğrulama
+<br>const result = nameSchema.safeParse("Ahmet") // ✅ Başarılı
+<br>const result2 = nameSchema.safeParse(123)     // ❌ Hata
+<br></code>`<code>
+<br>
+<br><h3>Parse vs SafeParse</h3>
+<br>
+<br><strong></code>parse()<code></strong>: Hata durumunda exception fırlatır
+<br></code>`<code>typescript
+<br>try {
+<br>  const name = nameSchema.parse(123) // ZodError fırlatır
+<br>} catch (error) {
+<br>  console.error(error.errors) // Hata detayları
+<br>}
+<br></code>`<code>
+<br>
+<br><strong></code>safeParse()<code></strong>: Hata durumunda obje döner (önerilen)
+<br></code>`<code>typescript
+<br>const result = nameSchema.safeParse(123)
+<br>
+<br>if (result.success) {
+<br>  console.log(result.data) // Geçerli veri
+<br>} else {
+<br>  console.log(result.error.errors) // Hata detayları
+<br>}
+<br></code>`<code>
+<br>
+<br><hr>
+<br>
+<br><h2>Veri Tipleri</h2>
+<br>
+<br><h3>1. String (Metin)</h3>
+<br>
+<br></code>`<code>typescript
+<br>z.string()                    // Herhangi bir string
+<br>z.string().min(1)            // En az 1 karakter
+<br>z.string().max(100)          // En fazla 100 karakter
+<br>z.string().length(10)        // Tam 10 karakter
+<br>z.string().email()           // E-posta formatı
+<br>z.string().url()             // URL formatı
+<br>z.string().uuid()            // UUID formatı
+<br>z.string().regex(/^[A-Z]+$/) // Regex ile özel format
+<br></code>`<code>
+<br>
+<br><strong>Projenizdeki Örnek:</strong>
+<br></code>`<code>8:19:Frontend/src/components/LoginForm.jsx
+<br>const loginSchema = z.object({
+<br>  email: z
+<br>    .string()
+<br>    .min(1, 'E-posta adresi gereklidir')
+<br>    .email('Geçerli bir e-posta adresi giriniz'),
+<br>  password: z
+<br>    .string()
+<br>    .min(1, 'Şifre gereklidir'),
+<br>  rememberMe: z.boolean().optional().default(false)
+<br>})
+<br></code>`<code>
+<br>
+<br><h3>2. Number (Sayı)</h3>
+<br>
+<br></code>`<code>typescript
+<br>z.number()                    // Herhangi bir sayı
+<br>z.number().int()              // Tam sayı
+<br>z.number().positive()         // Pozitif sayı
+<br>z.number().negative()         // Negatif sayı
+<br>z.number().min(0)            // Minimum değer
+<br>z.number().max(100)          // Maksimum değer
+<br>z.number().multipleOf(5)      // 5'in katı
+<br></code>`<code>
+<br>
+<br><strong>Örnek:</strong>
+<br></code>`<code>typescript
+<br>const ageSchema = z.number().int().min(0).max(120)
+<br>const priceSchema = z.number().positive()
+<br></code>`<code>
+<br>
+<br><h3>3. Boolean (Mantıksal)</h3>
+<br>
+<br></code>`<code>typescript
+<br>z.boolean()                   // true veya false
+<br>z.boolean().default(false)    // Varsayılan değer
+<br></code>`<code>
+<br>
+<br><strong>Projenizdeki Örnek:</strong>
+<br></code>`<code>19:19:Frontend/src/components/LoginForm.jsx
+<br>  rememberMe: z.boolean().optional().default(false)
+<br></code>`<code>
+<br>
+<br><h3>4. Date (Tarih)</h3>
+<br>
+<br></code>`<code>typescript
+<br>z.date()                      // Date objesi
+<br>z.date().min(new Date())      // Gelecek tarih
+<br>z.date().max(new Date())      // Geçmiş tarih
+<br></code>`<code>
+<br>
+<br><strong>Örnek:</strong>
+<br></code>`<code>typescript
+<br>const birthDateSchema = z.date().max(new Date('2010-01-01'))
+<br></code>`<code>
+<br>
+<br><h3>5. Array (Dizi)</h3>
+<br>
+<br></code>`<code>typescript
+<br>z.array(z.string())          // String dizisi
+<br>z.array(z.number()).min(1)   // En az 1 eleman
+<br>z.array(z.number()).max(10)  // En fazla 10 eleman
+<br>z.array(z.number()).length(5) // Tam 5 eleman
+<br></code>`<code>
+<br>
+<br><strong>Örnek:</strong>
+<br></code>`<code>typescript
+<br>const tagsSchema = z.array(z.string()).min(1, 'En az bir etiket seçmelisiniz')
+<br></code>`<code>
+<br>
+<br><h3>6. Object (Nesne)</h3>
+<br>
+<br></code>`<code>typescript
+<br>z.object({
+<br>  name: z.string(),
+<br>  age: z.number()
+<br>})
+<br></code>`<code>
+<br>
+<br><strong>Projenizdeki Örnek:</strong>
+<br></code>`<code>8:19:Frontend/src/pages/Register.jsx
+<br>const registerSchema = z
+<br>  .object({
+<br>    firstName: z.string().min(1, 'Ad alanı zorunludur'),
+<br>    lastName: z.string().min(1, 'Soyad alanı zorunludur'),
+<br>    email: z.string().min(1, 'E-posta alanı zorunludur').email('Geçerli bir e-posta adresi giriniz'),
+<br>    password: z.string().min(6, 'Şifre en az 6 karakter olmalıdır'),
+<br>    confirmPassword: z.string().min(6, 'Şifre tekrar alanı zorunludur')
+<br>  })
+<br>  .refine(data => data.password === data.confirmPassword, {
+<br>    message: 'Şifreler eşleşmiyor',
+<br>    path: ['confirmPassword']
+<br>  })
+<br></code>`<code>
+<br>
+<br><h3>7. Optional ve Nullable</h3>
+<br>
+<br></code>`<code>typescript
+<br>z.string().optional()        // undefined olabilir
+<br>z.string().nullable()        // null olabilir
+<br>z.string().nullish()         // null veya undefined olabilir
+<br>z.string().default("varsayılan") // Varsayılan değer
+<br></code>`<code>
+<br>
+<br><strong>Örnek:</strong>
+<br></code>`<code>typescript
+<br>const userSchema = z.object({
+<br>  name: z.string(),
+<br>  email: z.string().email(),
+<br>  phone: z.string().optional(),      // Opsiyonel
+<br>  notes: z.string().nullable(),       // null olabilir
+<br>  status: z.string().default("active") // Varsayılan değer
+<br>})
+<br></code>`<code>
+<br>
+<br><h3>8. Union (Birleşim)</h3>
+<br>
+<br></code>`<code>typescript
+<br>z.union([z.string(), z.number()])  // String veya number
+<br>z.string().or(z.number())          // Aynı şey (kısa yazım)
+<br></code>`<code>
+<br>
+<br><strong>Örnek:</strong>
+<br></code>`<code>typescript
+<br>const idSchema = z.union([z.string(), z.number()])
+<br>// veya
+<br>const idSchema = z.string().or(z.number())
+<br></code>`<code>
+<br>
+<br><h3>9. Enum (Sabit Değerler)</h3>
+<br>
+<br></code>`<code>typescript
+<br>z.enum(['admin', 'user', 'guest'])  // Sadece bu değerler
+<br></code>`<code>
+<br>
+<br><strong>Örnek:</strong>
+<br></code>`<code>typescript
+<br>const roleSchema = z.enum(['admin', 'user', 'moderator'])
+<br></code>`<code>
+<br>
+<br><h3>10. Literal (Tam Eşleşme)</h3>
+<br>
+<br></code>`<code>typescript
+<br>z.literal('success')          // Sadece 'success' değeri
+<br>z.literal(42)                 // Sadece 42 değeri
+<br></code>`<code>
+<br>
+<br><hr>
+<br>
+<br><h2>Validasyon Metodları</h2>
+<br>
+<br><h3>Chaining (Zincirleme)</h3>
+<br>
+<br>Birden fazla validasyonu birleştirebilirsiniz:
+<br>
+<br></code>`<code>typescript
+<br>const emailSchema = z
+<br>  .string()
+<br>  .min(1, 'E-posta gereklidir')
+<br>  .email('Geçerli bir e-posta giriniz')
+<br>  .toLowerCase()              // Otomatik küçük harfe çevir
+<br></code>`<code>
+<br>
+<br><h3>Custom Validation (Özel Doğrulama)</h3>
+<br>
+<br><strong></code>.refine()<code></strong>: Karmaşık doğrulamalar için
+<br>
+<br></code>`<code>typescript
+<br>const passwordSchema = z
+<br>  .string()
+<br>  .min(8)
+<br>  .refine(
+<br>    (password) => /[A-Z]/.test(password),
+<br>    { message: 'En az bir büyük harf içermelidir' }
+<br>  )
+<br>  .refine(
+<br>    (password) => /[0-9]/.test(password),
+<br>    { message: 'En az bir rakam içermelidir' }
+<br>  )
+<br></code>`<code>
+<br>
+<br><strong>Projenizdeki Örnek:</strong>
+<br></code>`<code>16:19:Frontend/src/pages/Register.jsx
+<br>  .refine(data => data.password === data.confirmPassword, {
+<br>    message: 'Şifreler eşleşmiyor',
+<br>    path: ['confirmPassword']
+<br>  })
+<br></code>`<code>
+<br>
+<br><strong></code>.superRefine()<code></strong>: Daha gelişmiş hata kontrolü
+<br>
+<br></code>`<code>typescript
+<br>const schema = z.string().superRefine((val, ctx) => {
+<br>  if (val.length < 5) {
+<br>    ctx.addIssue({
+<br>      code: z.ZodIssueCode.custom,
+<br>      message: "Çok kısa"
+<br>    })
+<br>  }
+<br>})
+<br></code>`<code>
+<br>
+<br><h3>Transform (Dönüştürme)</h3>
+<br>
+<br>Veriyi doğrulama sırasında dönüştürebilirsiniz:
+<br>
+<br></code>`<code>typescript
+<br>const numberStringSchema = z.string().transform((val) => Number(val))
+<br>// "123" → 123
+<br>
+<br>const trimSchema = z.string().transform((val) => val.trim())
+<br>// "  ahmet  " → "ahmet"
+<br></code>`<code>
+<br>
+<br><h3>Preprocess (Ön İşleme)</h3>
+<br>
+<br>Veriyi doğrulamadan önce işleyebilirsiniz:
+<br>
+<br></code>`<code>typescript
+<br>const numberSchema = z.preprocess(
+<br>  (val) => (typeof val === 'string' ? Number(val) : val),
+<br>  z.number()
+<br>)
+<br></code>`<code>
+<br>
+<br><hr>
+<br>
+<br><h2>İleri Seviye Özellikler</h2>
+<br>
+<br><h3>1. Nested Objects (İç İçe Nesneler)</h3>
+<br>
+<br></code>`<code>typescript
+<br>const addressSchema = z.object({
+<br>  street: z.string(),
+<br>  city: z.string(),
+<br>  zipCode: z.string()
+<br>})
+<br>
+<br>const userSchema = z.object({
+<br>  name: z.string(),
+<br>  address: addressSchema  // İç içe şema
+<br>})
+<br>
+<br>// veya inline
+<br>const userSchema = z.object({
+<br>  name: z.string(),
+<br>  address: z.object({
+<br>    street: z.string(),
+<br>    city: z.string()
+<br>  })
+<br>})
+<br></code>`<code>
+<br>
+<br><h3>2. Arrays of Objects (Nesne Dizileri)</h3>
+<br>
+<br></code>`<code>typescript
+<br>const userSchema = z.object({
+<br>  name: z.string(),
+<br>  hobbies: z.array(z.object({
+<br>    name: z.string(),
+<br>    level: z.enum(['beginner', 'intermediate', 'advanced'])
+<br>  }))
+<br>})
+<br></code>`<code>
+<br>
+<br><h3>3. Partial (Kısmi Şema)</h3>
+<br>
+<br>Tüm alanları opsiyonel yapar:
+<br>
+<br></code>`<code>typescript
+<br>const fullUserSchema = z.object({
+<br>  name: z.string(),
+<br>  email: z.string().email(),
+<br>  age: z.number()
+<br>})
+<br>
+<br>const partialUserSchema = fullUserSchema.partial()
+<br>// { name?: string, email?: string, age?: number }
+<br></code>`<code>
+<br>
+<br><h3>4. Pick ve Omit (Seçme ve Çıkarma)</h3>
+<br>
+<br></code>`<code>typescript
+<br>const userSchema = z.object({
+<br>  name: z.string(),
+<br>  email: z.string(),
+<br>  password: z.string(),
+<br>  age: z.number()
+<br>})
+<br>
+<br>// Sadece belirli alanları al
+<br>const publicUserSchema = userSchema.pick({ name: true, email: true })
+<br>
+<br>// Belirli alanları çıkar
+<br>const safeUserSchema = userSchema.omit({ password: true })
+<br></code>`<code>
+<br>
+<br><h3>5. Extend (Genişletme)</h3>
+<br>
+<br></code>`<code>typescript
+<br>const baseSchema = z.object({
+<br>  name: z.string(),
+<br>  email: z.string()
+<br>})
+<br>
+<br>const extendedSchema = baseSchema.extend({
+<br>  age: z.number(),
+<br>  phone: z.string().optional()
+<br>})
+<br></code>`<code>
+<br>
+<br><h3>6. Merge (Birleştirme)</h3>
+<br>
+<br></code>`<code>typescript
+<br>const schema1 = z.object({ name: z.string() })
+<br>const schema2 = z.object({ age: z.number() })
+<br>
+<br>const mergedSchema = schema1.merge(schema2)
+<br>// { name: string, age: number }
+<br></code>`<code>
+<br>
+<br><h3>7. Discriminated Union (Ayrıştırılmış Birleşim)</h3>
+<br>
+<br></code>`<code>typescript
+<br>const dogSchema = z.object({
+<br>  type: z.literal('dog'),
+<br>  bark: z.boolean()
+<br>})
+<br>
+<br>const catSchema = z.object({
+<br>  type: z.literal('cat'),
+<br>  meow: z.boolean()
+<br>})
+<br>
+<br>const petSchema = z.discriminatedUnion('type', [dogSchema, catSchema])
+<br></code>`<code>
+<br>
+<br><hr>
+<br>
+<br><h2>React Hook Form ile Entegrasyon</h2>
+<br>
+<br>Zod, React Hook Form ile mükemmel çalışır. Projenizde de kullanılıyor! ✅
+<br>
+<br><h3>Kurulum</h3>
+<br>
+<br></code>`<code>bash
+<br>npm install @hookform/resolvers zod react-hook-form
+<br></code>`<code>
+<br>
+<br><h3>Kullanım</h3>
+<br>
+<br><strong>1. Şema Oluşturma:</strong>
+<br></code>`<code>typescript
+<br>import { z } from 'zod'
+<br>
+<br>const formSchema = z.object({
+<br>  email: z.string().email('Geçerli bir e-posta giriniz'),
+<br>  password: z.string().min(6, 'Şifre en az 6 karakter olmalıdır')
+<br>})
+<br></code>`<code>
+<br>
+<br><strong>2. React Hook Form ile Entegrasyon:</strong>
+<br></code>`<code>typescript
+<br>import { useForm } from 'react-hook-form'
+<br>import { zodResolver } from '@hookform/resolvers/zod'
+<br>
+<br>function MyForm() {
+<br>  const {
+<br>    register,
+<br>    handleSubmit,
+<br>    formState: { errors }
+<br>  } = useForm({
+<br>    resolver: zodResolver(formSchema),
+<br>    defaultValues: {
+<br>      email: '',
+<br>      password: ''
+<br>    }
+<br>  })
+<br>
+<br>  const onSubmit = (data) => {
+<br>    // data otomatik olarak doğrulanmış ve tip güvenli
+<br>    console.log(data)
+<br>  }
+<br>
+<br>  return (
+<br>    <form onSubmit={handleSubmit(onSubmit)}>
+<br>      <input {...register('email')} />
+<br>      {errors.email && <span>{errors.email.message}</span>}
+<br>      
+<br>      <input type="password" {...register('password')} />
+<br>      {errors.password && <span>{errors.password.message}</span>}
+<br>      
+<br>      <button type="submit">Gönder</button>
+<br>    </form>
+<br>  )
+<br>}
+<br></code>`<code>
+<br>
+<br><strong>Projenizdeki Gerçek Örnek:</strong>
+<br></code>`<code>27:41:Frontend/src/pages/Register.jsx
+<br>  const {
+<br>    register,
+<br>    handleSubmit,
+<br>    reset,
+<br>    formState: { errors }
+<br>  } = useForm({
+<br>    resolver: zodResolver(registerSchema),
+<br>    defaultValues: {
+<br>      firstName: '',
+<br>      lastName: '',
+<br>      email: '',
+<br>      password: '',
+<br>      confirmPassword: ''
+<br>    }
+<br>  })
+<br></code>`<code>
+<br>
+<br><h3>TypeScript ile Tip Çıkarımı</h3>
+<br>
+<br></code>`<code>typescript
+<br>import { z } from 'zod'
+<br>import { useForm } from 'react-hook-form'
+<br>import { zodResolver } from '@hookform/resolvers/zod'
+<br>
+<br>const formSchema = z.object({
+<br>  email: z.string().email(),
+<br>  age: z.number().min(18)
+<br>})
+<br>
+<br>// Tip otomatik çıkarılır
+<br>type FormData = z.infer<typeof formSchema>
+<br>
+<br>function MyForm() {
+<br>  const { register, handleSubmit } = useForm<FormData>({
+<br>    resolver: zodResolver(formSchema)
+<br>  })
+<br>  
+<br>  // ...
+<br>}
+<br></code>`<code>
+<br>
+<br><hr>
+<br>
+<br><h2>Pratik Örnekler</h2>
+<br>
+<br><h3>1. Kullanıcı Kayıt Formu</h3>
+<br>
+<br></code>`<code>typescript
+<br>const registerSchema = z.object({
+<br>  firstName: z.string().min(2, 'Ad en az 2 karakter olmalıdır'),
+<br>  lastName: z.string().min(2, 'Soyad en az 2 karakter olmalıdır'),
+<br>  email: z.string().email('Geçerli bir e-posta adresi giriniz'),
+<br>  password: z
+<br>    .string()
+<br>    .min(8, 'Şifre en az 8 karakter olmalıdır')
+<br>    .regex(/[A-Z]/, 'En az bir büyük harf içermelidir')
+<br>    .regex(/[0-9]/, 'En az bir rakam içermelidir'),
+<br>  confirmPassword: z.string(),
+<br>  age: z.number().int().min(18, '18 yaşından büyük olmalısınız'),
+<br>  terms: z.boolean().refine(val => val === true, {
+<br>    message: 'Şartları kabul etmelisiniz'
+<br>  })
+<br>}).refine(data => data.password === data.confirmPassword, {
+<br>  message: 'Şifreler eşleşmiyor',
+<br>  path: ['confirmPassword']
+<br>})
+<br></code>`<code>
+<br>
+<br><h3>2. API Request/Response Validasyonu</h3>
+<br>
+<br></code>`<code>typescript
+<br>// API'den gelen veriyi doğrula
+<br>const userResponseSchema = z.object({
+<br>  id: z.number(),
+<br>  name: z.string(),
+<br>  email: z.string().email(),
+<br>  createdAt: z.string().datetime()
+<br>})
+<br>
+<br>async function fetchUser(id: number) {
+<br>  const response = await fetch(</code>/api/users/${id}<code>)
+<br>  const data = await response.json()
+<br>  
+<br>  // Veriyi doğrula
+<br>  const validatedData = userResponseSchema.parse(data)
+<br>  return validatedData // Tip güvenli!
+<br>}
+<br></code>`<code>
+<br>
+<br><h3>3. Form State Yönetimi</h3>
+<br>
+<br></code>`<code>typescript
+<br>const productSchema = z.object({
+<br>  name: z.string().min(1),
+<br>  price: z.number().positive(),
+<br>  category: z.enum(['electronics', 'clothing', 'food']),
+<br>  tags: z.array(z.string()).min(1),
+<br>  description: z.string().optional()
+<br>})
+<br>
+<br>// Form submit edilmeden önce doğrula
+<br>function ProductForm() {
+<br>  const [formData, setFormData] = useState({})
+<br>  
+<br>  const handleSubmit = (e) => {
+<br>    e.preventDefault()
+<br>    
+<br>    const result = productSchema.safeParse(formData)
+<br>    
+<br>    if (!result.success) {
+<br>      // Hataları göster
+<br>      result.error.errors.forEach(err => {
+<br>        console.error(</code>${err.path.join('.')}: ${err.message}<code>)
+<br>      })
+<br>      return
+<br>    }
+<br>    
+<br>    // Doğrulanmış veriyi gönder
+<br>    submitProduct(result.data)
+<br>  }
+<br>}
+<br></code>`<code>
+<br>
+<br><h3>4. Environment Variables (Ortam Değişkenleri)</h3>
+<br>
+<br></code>`<code>typescript
+<br>const envSchema = z.object({
+<br>  DATABASE_URL: z.string().url(),
+<br>  API_KEY: z.string().min(1),
+<br>  PORT: z.string().transform(Number).pipe(z.number().int().positive()),
+<br>  NODE_ENV: z.enum(['development', 'production', 'test'])
+<br>})
+<br>
+<br>const env = envSchema.parse(process.env)
+<br>// Artık env değişkenleri tip güvenli!
+<br></code>`<code>
+<br>
+<br><h3>5. Dinamik Form Validasyonu</h3>
+<br>
+<br></code>`<code>typescript
+<br>const createDynamicSchema = (minAge: number) => {
+<br>  return z.object({
+<br>    name: z.string(),
+<br>    age: z.number().min(minAge, </code>Yaş en az ${minAge} olmalıdır<code>),
+<br>    email: z.string().email()
+<br>  })
+<br>}
+<br>
+<br>// Kullanım
+<br>const adultSchema = createDynamicSchema(18)
+<br>const seniorSchema = createDynamicSchema(65)
+<br></code>`<code>
+<br>
+<br><hr>
+<br>
+<br><h2>Hata Yönetimi</h2>
+<br>
+<br><h3>Hata Formatı</h3>
+<br>
+<br></code>`<code>typescript
+<br>const result = schema.safeParse(invalidData)
+<br>
+<br>if (!result.success) {
+<br>  result.error.errors.forEach((error) => {
+<br>    console.log({
+<br>      path: error.path,        // ['email'] - Hatanın yolu
+<br>      message: error.message,   // "Geçerli bir e-posta giriniz"
+<br>      code: error.code         // "invalid_string"
+<br>    })
+<br>  })
+<br>}
+<br></code>`<code>
+<br>
+<br><h3>Özel Hata Mesajları</h3>
+<br>
+<br></code>`<code>typescript
+<br>const schema = z.object({
+<br>  email: z.string({
+<br>    required_error: "E-posta gereklidir",
+<br>    invalid_type_error: "E-posta bir string olmalıdır"
+<br>  }).email("Geçerli bir e-posta adresi giriniz"),
+<br>  
+<br>  age: z.number({
+<br>    required_error: "Yaş gereklidir",
+<br>    invalid_type_error: "Yaş bir sayı olmalıdır"
+<br>  }).min(18, "18 yaşından büyük olmalısınız")
+<br>})
+<br></code>`<code>
+<br>
+<br><h3>Hata Mesajlarını Özelleştirme</h3>
+<br>
+<br></code>`<code>typescript
+<br>import { z } from 'zod'
+<br>
+<br>// Global hata mesajları
+<br>z.setErrorMap((issue, ctx) => {
+<br>  if (issue.code === z.ZodIssueCode.invalid_type) {
+<br>    if (issue.expected === 'string') {
+<br>      return { message: 'Bu alan bir metin olmalıdır' }
+<br>    }
+<br>  }
+<br>  return { message: ctx.defaultError }
+<br>})
+<br>
+<br>// Şema bazlı özelleştirme
+<br>const schema = z.string({
+<br>  errorMap: (issue, ctx) => {
+<br>    if (issue.code === 'too_small') {
+<br>      return { message: 'Çok kısa!' }
+<br>    }
+<br>    return { message: ctx.defaultError }
+<br>  }
+<br>})
+<br></code>`<code>
+<br>
+<br><h3>Hata Formatlama</h3>
+<br>
+<br></code>`<code>typescript
+<br>function formatZodErrors(error: z.ZodError) {
+<br>  return error.errors.map(err => ({
+<br>    field: err.path.join('.'),
+<br>    message: err.message
+<br>  }))
+<br>}
+<br>
+<br>// Kullanım
+<br>const result = schema.safeParse(data)
+<br>if (!result.success) {
+<br>  const formattedErrors = formatZodErrors(result.error)
+<br>  // [{ field: 'email', message: 'Geçerli bir e-posta giriniz' }]
+<br>}
+<br></code>`<code>
+<br>
+<br><hr>
+<br>
+<br><h2>Best Practices (En İyi Uygulamalar)</h2>
+<br>
+<br><h3>1. Şemaları Ayrı Dosyalarda Tutun</h3>
+<br>
+<br></code>`<code>typescript
+<br>// schemas/userSchema.ts
+<br>import { z } from 'zod'
+<br>
+<br>export const userSchema = z.object({
+<br>  name: z.string(),
+<br>  email: z.string().email()
+<br>})
+<br>
+<br>export type User = z.infer<typeof userSchema>
+<br></code>`<code>
+<br>
+<br><h3>2. Şemaları Yeniden Kullanın</h3>
+<br>
+<br></code>`<code>typescript
+<br>// schemas/commonSchemas.ts
+<br>export const emailSchema = z.string().email('Geçerli bir e-posta giriniz')
+<br>export const passwordSchema = z.string().min(8, 'Şifre en az 8 karakter olmalıdır')
+<br>
+<br>// schemas/userSchema.ts
+<br>import { emailSchema, passwordSchema } from './commonSchemas'
+<br>
+<br>export const loginSchema = z.object({
+<br>  email: emailSchema,
+<br>  password: passwordSchema
+<br>})
+<br></code>`<code>
+<br>
+<br><h3>3. TypeScript Tiplerini Çıkarın</h3>
+<br>
+<br></code>`<code>typescript
+<br>const userSchema = z.object({
+<br>  name: z.string(),
+<br>  age: z.number()
+<br>})
+<br>
+<br>// Otomatik tip çıkarımı
+<br>type User = z.infer<typeof userSchema>
+<br>// { name: string, age: number }
+<br>
+<br>// Input/Output ayrımı
+<br>type UserInput = z.input<typeof userSchema>   // Transform öncesi
+<br>type UserOutput = z.output<typeof userSchema> // Transform sonrası
+<br></code>`<code>
+<br>
+<br><h3>4. safeParse Kullanın</h3>
+<br>
+<br></code>`<code>typescript
+<br>// ❌ Kötü - Exception fırlatır
+<br>try {
+<br>  const data = schema.parse(unknownData)
+<br>} catch (error) {
+<br>  // Hata yönetimi
+<br>}
+<br>
+<br>// ✅ İyi - Güvenli parse
+<br>const result = schema.safeParse(unknownData)
+<br>if (result.success) {
+<br>  // Başarılı
+<br>} else {
+<br>  // Hata yönetimi
+<br>}
+<br></code>`<code>
+<br>
+<br><h3>5. Transform ile Veri Temizleme</h3>
+<br>
+<br></code>`<code>typescript
+<br>const cleanStringSchema = z.string().transform(val => val.trim().toLowerCase())
+<br>
+<br>const userSchema = z.object({
+<br>  email: z.string().email().transform(val => val.toLowerCase()),
+<br>  name: z.string().transform(val => val.trim())
+<br>})
+<br></code>`<code>
+<br>
+<br><h3>6. Partial ile Update İşlemleri</h3>
+<br>
+<br></code>`<code>typescript
+<br>const createUserSchema = z.object({
+<br>  name: z.string(),
+<br>  email: z.string().email(),
+<br>  age: z.number()
+<br>})
+<br>
+<br>// Update için kısmi şema
+<br>const updateUserSchema = createUserSchema.partial()
+<br>
+<br>// Kullanım
+<br>function updateUser(id: number, data: z.infer<typeof updateUserSchema>) {
+<br>  // Sadece gönderilen alanlar güncellenir
+<br>}
+<br></code>`<code>
+<br>
+<br><h3>7. Async Validation (Zaman Uyumsuz Doğrulama)</h3>
+<br>
+<br></code>`<code>typescript
+<br>const uniqueEmailSchema = z.string().email().refine(
+<br>  async (email) => {
+<br>    const exists = await checkEmailExists(email)
+<br>    return !exists
+<br>  },
+<br>  { message: 'Bu e-posta zaten kullanılıyor' }
+<br>)
+<br></code>`<code>
+<br>
+<br><h3>8. Şema Versiyonlama</h3>
+<br>
+<br></code>`<code>typescript
+<br>// v1
+<br>const userSchemaV1 = z.object({
+<br>  name: z.string()
+<br>})
+<br>
+<br>// v2
+<br>const userSchemaV2 = z.object({
+<br>  firstName: z.string(),
+<br>  lastName: z.string()
+<br>})
+<br>
+<br>// Migration
+<br>function migrateV1ToV2(v1Data: z.infer<typeof userSchemaV1>) {
+<br>  return {
+<br>    firstName: v1Data.name.split(' ')[0],
+<br>    lastName: v1Data.name.split(' ').slice(1).join(' ')
+<br>  }
+<br>}
+<br></code>`<code>
+<br>
+<br><hr>
+<br>
+<br><h2>Sık Kullanılan Şema Örnekleri</h2>
+<br>
+<br><h3>Türk Telefon Numarası</h3>
+<br>
+<br></code>`<code>typescript
+<br>const turkishPhoneSchema = z
+<br>  .string()
+<br>  .regex(/^(\+90|0)?[5][0-9]{9}$/, 'Geçerli bir Türk telefon numarası giriniz')
+<br>  .transform(val => val.replace(/^(\+90|0)/, '')) // +90 veya 0'ı kaldır
+<br></code>`<code>
+<br>
+<br><h3>TC Kimlik No</h3>
+<br>
+<br></code>`<code>typescript
+<br>const tcKimlikSchema = z
+<br>  .string()
+<br>  .length(11, 'TC Kimlik No 11 haneli olmalıdır')
+<br>  .regex(/^[0-9]+$/, 'TC Kimlik No sadece rakam içermelidir')
+<br></code>`<code>
+<br>
+<br><h3>Türk Lirası Formatı</h3>
+<br>
+<br></code>`<code>typescript
+<br>const priceSchema = z
+<br>  .string()
+<br>  .regex(/^\d+([.,]\d{2})?$/, 'Geçerli bir fiyat giriniz')
+<br>  .transform(val => parseFloat(val.replace(',', '.')))
+<br>  .pipe(z.number().positive())
+<br></code>`<code>
+<br>
+<br><h3>Tarih Aralığı</h3>
+<br>
+<br></code>`<code>typescript
+<br>const dateRangeSchema = z.object({
+<br>  startDate: z.string().datetime(),
+<br>  endDate: z.string().datetime()
+<br>}).refine(
+<br>  data => new Date(data.endDate) > new Date(data.startDate),
+<br>  {
+<br>    message: 'Bitiş tarihi başlangıç tarihinden sonra olmalıdır',
+<br>    path: ['endDate']
+<br>  }
+<br>)
+<br></code>``
+<br>
+<br><hr>
+<br>
+<br><h2>Özet: Zod'un Avantajları</h2>
+<br>
+<br><li>✅ <strong>Tip Güvenliği</strong>: TypeScript ile mükemmel uyum</li>
+<br><li>✅ <strong>Runtime Doğrulama</strong>: Çalışma zamanında veri kontrolü</li>
+<br><li>✅ <strong>Okunabilirlik</strong>: Temiz ve anlaşılır API</li>
+<br><li>✅ <strong>Hata Mesajları</strong>: Özelleştirilebilir ve anlaşılır</li>
+<br><li>✅ <strong>Form Entegrasyonu</strong>: React Hook Form ile kolay kullanım</li>
+<br><li>✅ <strong>Performans</strong>: Hızlı ve optimize edilmiş</li>
+<br><li>✅ <strong>Genişletilebilirlik</strong>: Özel validasyonlar eklenebilir</li>
+<br><li>✅ <strong>Topluluk Desteği</strong>: Aktif ve büyük bir topluluk</li>
+<br>
+<br><hr>
+<br>
+<br><h2>Kaynaklar</h2>
+<br>
+<br><li><a href="https://zod.dev/">Zod Resmi Dokümantasyon</a></li>
+<br><li><a href="https://github.com/colinhacks/zod">Zod GitHub</a></li>
+<br><li><a href="https://react-hook-form.com/get-started#SchemaValidation">React Hook Form + Zod</a></li></ul>
+<br>
+<br><hr>
+<br>
+<br><h2>Sonuç</h2>
+<br>
+<br>Zod, modern JavaScript/TypeScript projelerinde veri doğrulama için güçlü ve esnek bir araçtır. Projenizde zaten kullanılıyor ve React Hook Form ile entegre edilmiş durumda. Bu rehberdeki örnekleri kullanarak daha karmaşık validasyonlar oluşturabilirsiniz.
+<br>
+<br><strong>İyi kodlamalar! 🚀</strong>
+<br>
+<br>
+    </div>
+    <script>
+        // Highlight code blocks
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+        });
+    </script>
+</body>
+</html>
