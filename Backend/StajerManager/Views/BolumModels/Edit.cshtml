@@ -1,0 +1,74 @@
+﻿@model StajerManager.Models.BolumModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>BolumModel</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="BolumID" />
+            <div class="form-group">
+                <label asp-for="BolumAdi" class="control-label"></label>
+                <input asp-for="BolumAdi" class="form-control" />
+                <span asp-validation-for="BolumAdi" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BolumKodu" class="control-label"></label>
+                <input asp-for="BolumKodu" class="form-control" />
+                <span asp-validation-for="BolumKodu" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Aciklama" class="control-label"></label>
+                <input asp-for="Aciklama" class="form-control" />
+                <span asp-validation-for="Aciklama" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Fakulte" class="control-label"></label>
+                <input asp-for="Fakulte" class="form-control" />
+                <span asp-validation-for="Fakulte" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EgitimSuresi" class="control-label"></label>
+                <input asp-for="EgitimSuresi" class="form-control" />
+                <span asp-validation-for="EgitimSuresi" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EgitimTuru" class="control-label"></label>
+                <input asp-for="EgitimTuru" class="form-control" />
+                <span asp-validation-for="EgitimTuru" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UniversiteID" class="control-label"></label>
+                <select asp-for="UniversiteID" class="form-control" asp-items="ViewBag.UniversiteID"></select>
+                <span asp-validation-for="UniversiteID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="OlusturmaTarihi" class="control-label"></label>
+                <input asp-for="OlusturmaTarihi" class="form-control" />
+                <span asp-validation-for="OlusturmaTarihi" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Aktif" /> @Html.DisplayNameFor(model => model.Aktif)
+                </label>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,483 @@
+@model StajerManager.Controllers.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard - StajerManager";
+}
+
+<div class="container-fluid">
+    <!-- Sayfa Başlığı -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+        </h1>
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-success" onclick="exportToExcel()">
+                <i class="fas fa-file-excel me-1"></i>Excel Export
+            </button>
+            <button type="button" class="btn btn-danger" onclick="exportToPdf()">
+                <i class="fas fa-file-pdf me-1"></i>PDF Export
+            </button>
+        </div>
+    </div>
+
+    <!-- İstatistik Kartları -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Toplam Stajer
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalStajers">
+                                @Model.TotalStajers
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-graduate fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Aktif Stajer
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="activeStajers">
+                                @Model.ActiveStajers
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-check fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Departman Sayısı
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalDepartments">
+                                @Model.TotalDepartments
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-building fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Üniversite Sayısı
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalUniversities">
+                                @Model.TotalUniversities
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-university fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grafikler -->
+    <div class="row">
+        <!-- Departman Dağılımı -->
+        <div class="col-xl-6 col-lg-7">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Departman Dağılımı</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-pie pt-4 pb-2">
+                        <canvas id="departmanChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Üniversite Dağılımı -->
+        <div class="col-xl-6 col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Üniversite Dağılımı (Top 10)</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-bar">
+                        <canvas id="universiteChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aylık Stajer Sayıları -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Aylık Stajer Sayıları</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="monthlyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Son Eklenen Stajerler -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Son Eklenen Stajerler</h6>
+                    <a asp-controller="Stajers" asp-action="Index" class="btn btn-primary btn-sm">
+                        <i class="fas fa-eye me-1"></i>Tümünü Gör
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Ad Soyad</th>
+                                    <th>E-posta</th>
+                                    <th>Departman</th>
+                                    <th>Üniversite</th>
+                                    <th>Başlangıç Tarihi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var stajer in Model.RecentStajers)
+                                {
+                                    <tr>
+                                        <td>@stajer.StajerID</td>
+                                        <td>@stajer.FullName</td>
+                                        <td>@stajer.Email</td>
+                                        <td>@stajer.DepartmanAdi</td>
+                                        <td>@stajer.UniversiteAdi</td>
+                                        <td>@stajer.StartDate.ToString("dd.MM.yyyy")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Export Modal -->
+<div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exportModalLabel">Export Seçenekleri</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="exportForm">
+                    <div class="mb-3">
+                        <label for="startDate" class="form-label">Başlangıç Tarihi</label>
+                        <input type="date" class="form-control" id="startDate" name="startDate">
+                    </div>
+                    <div class="mb-3">
+                        <label for="endDate" class="form-label">Bitiş Tarihi</label>
+                        <input type="date" class="form-control" id="endDate" name="endDate">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button type="button" class="btn btn-primary" id="confirmExport">Export Et</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        let departmanChart, universiteChart, monthlyChart;
+        let exportType = '';
+
+        $(document).ready(function() {
+            loadCharts();
+        });
+
+        function loadCharts() {
+            loadDepartmanChart();
+            loadUniversiteChart();
+            loadMonthlyChart();
+        }
+
+        function loadDepartmanChart() {
+            $.get('@Url.Action("GetDepartmanDistribution", "Dashboard")', function(response) {
+                if (response.success) {
+                    const ctx = document.getElementById('departmanChart').getContext('2d');
+                    
+                    if (departmanChart) {
+                        departmanChart.destroy();
+                    }
+
+                    departmanChart = new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: response.data.map(item => item.departman),
+                            datasets: [{
+                                data: response.data.map(item => item.count),
+                                backgroundColor: [
+                                    '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', 
+                                    '#e74a3b', '#858796', '#5a5c69', '#6f42c1'
+                                ],
+                                hoverBackgroundColor: [
+                                    '#2e59d9', '#17a673', '#2c9faf', '#dda20a',
+                                    '#c0392b', '#6c757d', '#4a4c55', '#5a32a3'
+                                ],
+                                hoverBorderColor: "rgba(234, 236, 244, 1)",
+                            }],
+                        },
+                        options: {
+                            maintainAspectRatio: false,
+                            tooltips: {
+                                backgroundColor: "rgb(255,255,255)",
+                                bodyFontColor: "#858796",
+                                borderColor: '#dddfeb',
+                                borderWidth: 1,
+                                xPadding: 15,
+                                yPadding: 15,
+                                displayColors: false,
+                                caretPadding: 10,
+                            },
+                            legend: {
+                                display: true,
+                                position: 'bottom'
+                            },
+                            cutoutPercentage: 80,
+                        },
+                    });
+                }
+            });
+        }
+
+        function loadUniversiteChart() {
+            $.get('@Url.Action("GetUniversiteDistribution", "Dashboard")', function(response) {
+                if (response.success) {
+                    const ctx = document.getElementById('universiteChart').getContext('2d');
+                    
+                    if (universiteChart) {
+                        universiteChart.destroy();
+                    }
+
+                    universiteChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: response.data.map(item => item.universite),
+                            datasets: [{
+                                label: "Stajer Sayısı",
+                                backgroundColor: "#4e73df",
+                                hoverBackgroundColor: "#2e59d9",
+                                borderColor: "#4e73df",
+                                data: response.data.map(item => item.count),
+                            }],
+                        },
+                        options: {
+                            maintainAspectRatio: false,
+                            layout: {
+                                padding: {
+                                    left: 10,
+                                    right: 25,
+                                    top: 25,
+                                    bottom: 0
+                                }
+                            },
+                            scales: {
+                                xAxes: [{
+                                    time: {
+                                        unit: 'month'
+                                    },
+                                    gridLines: {
+                                        display: false,
+                                        drawBorder: false
+                                    },
+                                    ticks: {
+                                        maxTicksLimit: 6
+                                    },
+                                    maxBarThickness: 25,
+                                }],
+                                yAxes: [{
+                                    ticks: {
+                                        min: 0,
+                                        maxTicksLimit: 5,
+                                        padding: 10,
+                                    },
+                                    gridLines: {
+                                        color: "rgb(234, 236, 244)",
+                                        zeroLineColor: "rgb(234, 236, 244)",
+                                        drawBorder: false,
+                                        borderDash: [2],
+                                        zeroLineBorderDash: [2]
+                                    }
+                                }],
+                            },
+                            legend: {
+                                display: false
+                            },
+                            tooltips: {
+                                titleMarginBottom: 10,
+                                titleFontColor: '#6e707e',
+                                titleFontSize: 14,
+                                backgroundColor: "rgb(255,255,255)",
+                                bodyFontColor: '#858796',
+                                borderColor: '#dddfeb',
+                                borderWidth: 1,
+                                xPadding: 15,
+                                yPadding: 15,
+                                displayColors: false,
+                                caretPadding: 10,
+                            },
+                        },
+                    });
+                }
+            });
+        }
+
+        function loadMonthlyChart() {
+            $.get('@Url.Action("GetMonthlyStajerCounts", "Dashboard")', function(response) {
+                if (response.success) {
+                    const ctx = document.getElementById('monthlyChart').getContext('2d');
+                    
+                    if (monthlyChart) {
+                        monthlyChart.destroy();
+                    }
+
+                    monthlyChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: response.data.map(item => item.monthName),
+                            datasets: [{
+                                label: "Stajer Sayısı",
+                                lineTension: 0.3,
+                                backgroundColor: "rgba(78, 115, 223, 0.05)",
+                                borderColor: "rgba(78, 115, 223, 1)",
+                                pointRadius: 3,
+                                pointBackgroundColor: "rgba(78, 115, 223, 1)",
+                                pointBorderColor: "rgba(78, 115, 223, 1)",
+                                pointHoverRadius: 3,
+                                pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+                                pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+                                pointHitRadius: 10,
+                                pointBorderWidth: 2,
+                                data: response.data.map(item => item.count),
+                            }],
+                        },
+                        options: {
+                            maintainAspectRatio: false,
+                            layout: {
+                                padding: {
+                                    left: 10,
+                                    right: 25,
+                                    top: 25,
+                                    bottom: 0
+                                }
+                            },
+                            scales: {
+                                xAxes: [{
+                                    time: {
+                                        unit: 'month'
+                                    },
+                                    gridLines: {
+                                        display: false,
+                                        drawBorder: false
+                                    },
+                                    ticks: {
+                                        maxTicksLimit: 7
+                                    }
+                                }],
+                                yAxes: [{
+                                    ticks: {
+                                        min: 0,
+                                        maxTicksLimit: 5,
+                                        padding: 10,
+                                    },
+                                    gridLines: {
+                                        color: "rgb(234, 236, 244)",
+                                        zeroLineColor: "rgb(234, 236, 244)",
+                                        drawBorder: false,
+                                        borderDash: [2],
+                                        zeroLineBorderDash: [2]
+                                    }
+                                }],
+                            },
+                            legend: {
+                                display: false
+                            },
+                            tooltips: {
+                                backgroundColor: "rgb(255,255,255)",
+                                bodyFontColor: '#858796',
+                                borderColor: '#dddfeb',
+                                borderWidth: 1,
+                                xPadding: 15,
+                                yPadding: 15,
+                                displayColors: false,
+                                caretPadding: 10,
+                            },
+                        },
+                    });
+                }
+            });
+        }
+
+        function exportToExcel() {
+            exportType = 'excel';
+            $('#exportModal').modal('show');
+        }
+
+        function exportToPdf() {
+            exportType = 'pdf';
+            $('#exportModal').modal('show');
+        }
+
+        $('#confirmExport').click(function() {
+            const formData = $('#exportForm').serialize();
+            let url = '';
+            
+            if (exportType === 'excel') {
+                url = '@Url.Action("ExportToExcel", "Dashboard")' + '?' + formData;
+            } else if (exportType === 'pdf') {
+                url = '@Url.Action("ExportToPdf", "Dashboard")' + '?' + formData;
+            }
+            
+            window.open(url, '_blank');
+            $('#exportModal').modal('hide');
+        });
+    </script>
+}

@@ -1,0 +1,93 @@
+﻿@model StajerManager.Models.StajerModel
+
+<div class="row">
+    <div class="col-12">
+        <dl class="row">
+            <dt class="col-sm-4">
+                <i class="fas fa-user me-1"></i>@Html.DisplayNameFor(model => model.FullName)
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.FullName)
+            </dd>
+            <dt class="col-sm-4">
+                <i class="fas fa-envelope me-1"></i>@Html.DisplayNameFor(model => model.Email)
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.Email)
+            </dd>
+            <dt class="col-sm-4">
+                <i class="fas fa-phone me-1"></i>@Html.DisplayNameFor(model => model.PhoneNumber)
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.PhoneNumber)
+            </dd>
+            <dt class="col-sm-4">
+                <i class="fas fa-university me-1"></i>Üniversite
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.Universite.UniversiteAdi)
+            </dd>
+            <dt class="col-sm-4">
+                <i class="fas fa-book me-1"></i>Bölüm
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.Bolum.BolumAdi)
+            </dd>
+            <dt class="col-sm-4">
+                <i class="fas fa-graduation-cap me-1"></i>Departman
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.Departman.DepartmanAdi)
+            </dd>
+            <dt class="col-sm-4">
+                <i class="fas fa-calendar-alt me-1"></i>@Html.DisplayNameFor(model => model.StartDate)
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.StartDate)
+            </dd>
+            <dt class="col-sm-4">
+                <i class="fas fa-calendar-check me-1"></i>@Html.DisplayNameFor(model => model.EndDate)
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.EndDate)
+            </dd>
+
+            <dt class="col-sm-4">
+                <i class="fa-solid fa-clock"></i>Kalan Gün
+            </dt>
+            <dd class="col-sm-8">
+                @{
+                    var kalanGun = (Model.EndDate.ToDateTime(TimeOnly.MinValue) - DateTime.Today).Days;
+                    var renkClass = kalanGun > 15 ? "text-success" : kalanGun > 7 ? "text-warning" : "text-danger";
+                }
+                <span class="@renkClass fw-bold">
+                    @if (kalanGun > 0)
+                    {
+                        @(kalanGun + " gün kaldı")
+                    }
+                    else if (kalanGun == 0)
+                    {
+                        <i class="fas fa-exclamation-triangle"></i>
+                        @("Bugün bitiyor!")
+                    }
+                    else
+                    {
+                        <i class="fas fa-times-circle"></i> @(Math.Abs(kalanGun) + " gün geçti")
+                    }
+                </span>
+            </dd>
+            <dt class="col-sm-4">
+                <i class="fas fa-sticky-note me-1"></i>@Html.DisplayNameFor(model => model.Notes)
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.Notes)
+            </dd>
+        </dl>
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+        <i class="fas fa-times me-1"></i>Kapat
+    </button>
+</div>

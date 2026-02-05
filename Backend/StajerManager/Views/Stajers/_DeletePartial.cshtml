@@ -1,0 +1,57 @@
+﻿@model StajerManager.Models.StajerModel
+
+<div class="row">
+    <div class="col-12">
+        <div class="alert alert-warning" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>Dikkat!</strong> Bu işlem geri alınamaz. Stajer kaydını silmek istediğinizden emin misiniz?
+        </div>
+
+        <dl class="row">
+            <dt class="col-sm-4">
+                <i class="fas fa-user me-1"></i>Ad Soyad:
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.FullName)
+            </dd>
+            <dt class="col-sm-4">
+                <i class="fas fa-envelope me-1"></i>E-mail:
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.Email)
+            </dd>
+            <dt class="col-sm-4">
+                <i class="fas fa-university me-1"></i>Üniversite:
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.Universite.UniversiteAdi)
+            </dd>
+            <dt class="col-sm-4">
+                <i class="fas fa-book me-1"></i>Bölüm:
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.Bolum.BolumAdi)
+            </dd>
+            <dt class="col-sm-4">
+                <i class="fas fa-graduation-cap me-1"></i>Departman:
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.Departman.DepartmanAdi)
+            </dd>
+        </dl>
+    </div>
+</div>
+
+<form asp-action="Delete" method="post" onsubmit="return false;">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="StajerID" />
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-times me-1"></i>İptal
+        </button>
+        <button type="button" id="deleteStajerBtn" class="btn btn-danger" onclick="deleteStajer(@Model.StajerID)">
+            <i class="fas fa-trash me-1"></i>Sil
+        </button>
+    </div>
+</form>

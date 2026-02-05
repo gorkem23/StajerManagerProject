@@ -1,0 +1,83 @@
+﻿@model IEnumerable<StajerManager.Models.BolumModel>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.BolumAdi)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BolumKodu)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Aciklama)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Fakulte)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EgitimSuresi)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EgitimTuru)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OlusturmaTarihi)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Aktif)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Universite)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.BolumAdi)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BolumKodu)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Aciklama)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Fakulte)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EgitimSuresi)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EgitimTuru)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OlusturmaTarihi)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Aktif)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Universite.UniversiteAdi)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.BolumID">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.BolumID">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.BolumID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -1,0 +1,156 @@
+﻿@model StajerManager.Models.StajerModel
+
+<form asp-action="Edit" method="post" onsubmit="return false;">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="StajerID" />
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label asp-for="FullName" class="form-label">
+                    <i class="fas fa-user me-1"></i>Ad Soyad
+                </label>
+                <input asp-for="FullName" class="form-control" required />
+                <span asp-validation-for="FullName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label">
+                    <i class="fas fa-envelope me-1"></i>E-mail
+                </label>
+                <input asp-for="Email" class="form-control" type="email" required />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label asp-for="PhoneNumber" class="form-label">
+                    <i class="fas fa-phone me-1"></i>Telefon
+                </label>
+                <input asp-for="PhoneNumber" class="form-control" type="tel" required />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label asp-for="Notes" class="form-label">
+                    <i class="fas fa-sticky-note me-1"></i>Notlar
+                </label>
+                <textarea asp-for="Notes" class="form-control" rows="5"></textarea>
+                <span asp-validation-for="Notes" class="text-danger"></span>
+            </div>
+
+
+        <div class="mb-3">
+            <label asp-for="UniversiteID" class="form-label">
+                <i class="fas fa-university me-1"></i>Üniversite
+            </label>
+            <select asp-for="UniversiteID" class="form-control" asp-items="ViewBag.Universiteler">
+                <option value="">-- Üniversite Seçiniz --</option>
+            </select>
+            <span asp-validation-for="UniversiteID" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="BolumID" class="form-label">
+                <i class="fas fa-book me-1"></i>Bölüm
+            </label>
+            <select asp-for="BolumID" class="form-control" asp-items="ViewBag.Bolumler">
+                <option value="">-- Bölüm Seçiniz --</option>
+            </select>
+            <span asp-validation-for="BolumID" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="mb-3">
+                <label asp-for="DepartmanID" class="form-label">
+                    <i class="fas fa-graduation-cap me-1"></i>Departman
+                </label>
+                <select asp-for="DepartmanID" class="form-control" asp-items="ViewBag.DepartmanList" required>
+                    <option value="">-- Departman Seçiniz --</option>
+                </select>
+                <span asp-validation-for="DepartmanID" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="mb-3">
+                <label asp-for="StartDate" class="form-label">
+                    <i class="fas fa-calendar-alt me-1"></i>Başlangıç Tarihi
+                </label>
+                <input asp-for="StartDate" class="form-control" type="date" required />
+                <span asp-validation-for="StartDate" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="mb-3">
+                <label asp-for="EndDate" class="form-label">
+                    <i class="fas fa-calendar-check me-1"></i>Bitiş Tarihi
+                </label>
+                <input asp-for="EndDate" class="form-control" type="date" required />
+                <span asp-validation-for="EndDate" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-times me-1"></i>İptal
+        </button>
+        <button type="button" id="updateStajerBtn" class="btn btn-warning" onclick="updateStajer(@Model.StajerID)">
+            <i class="fas fa-save me-1"></i>Güncelle
+        </button>
+    </div>
+</form>
+
+<script>
+// Üniversite seçimi değiştiğinde bölümleri güncelle (Edit formu için)
+document.addEventListener('DOMContentLoaded', function() {
+    const universiteSelect = document.querySelector('select[name="UniversiteID"]');
+    const bolumSelect = document.querySelector('select[name="BolumID"]');
+    
+    if (universiteSelect && bolumSelect) {
+        universiteSelect.addEventListener('change', function() {
+            const universiteId = this.value;
+            const currentBolumId = '@Model.BolumID';
+            
+            // Bölüm dropdown'ını temizle
+            bolumSelect.innerHTML = '<option value="">-- Bölüm Seçiniz --</option>';
+            
+            if (universiteId) {
+                // AJAX ile bölümleri yükle
+                fetch(`/Stajers/GetBolumlerByUniversite/${universiteId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            data.bolumler.forEach(bolum => {
+                                const option = document.createElement('option');
+                                option.value = bolum.bolumID;
+                                option.textContent = bolum.bolumAdi;
+                                
+                                // Eğer bu bölüm mevcut seçili bölümse, seçili yap
+                                if (bolum.bolumID == currentBolumId) {
+                                    option.selected = true;
+                                }
+                                
+                                bolumSelect.appendChild(option);
+                            });
+                        } else {
+                            console.error('Bölümler yüklenirken hata:', data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('AJAX hatası:', error);
+                    });
+            }
+        });
+    }
+});
+</script>

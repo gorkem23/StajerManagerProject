@@ -1,0 +1,40 @@
+@model StajerManager.Models.DepartmanModel
+
+<form asp-action="Create" method="post" onsubmit="return false;">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="mb-3">
+                <label asp-for="DepartmanAdi" class="form-label">
+                    <i class="fas fa-building me-1"></i>Departman Adı
+                </label>
+                <input asp-for="DepartmanAdi" class="form-control" required />
+                <span asp-validation-for="DepartmanAdi" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="mb-3">
+                <label asp-for="Aciklama" class="form-label">
+                    <i class="fas fa-info-circle me-1"></i>Açıklama
+                </label>
+                <textarea asp-for="Aciklama" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Aciklama" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-times me-1"></i>İptal
+        </button>
+        <!-- SPA için type="button" kullanıldı -->
+        <button type="button" id="saveDepartmanBtn" class="btn btn-success" onclick="saveDepartman()">
+            <i class="fas fa-save me-1"></i>Kaydet
+        </button>
+    </div>
+</form>

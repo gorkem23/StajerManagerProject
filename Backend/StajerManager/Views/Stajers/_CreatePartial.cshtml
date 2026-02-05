@@ -1,0 +1,326 @@
+@model StajerManager.Models.StajerModel
+
+<!-- SPA için form tag'i kaldırıldı, sadece div kullanıldı -->
+<div id="createForm">
+    <div id="validationSummary" class="text-danger mb-3" style="display: none;"></div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label for="fullName" class="form-label">
+                    <i class="fas fa-user me-1"></i>Ad Soyad
+                </label>
+                <input id="fullName" name="FullName" class="form-control" required />
+                <span id="fullNameError" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label for="email" class="form-label">
+                    <i class="fas fa-envelope me-1"></i>E-mail
+                </label>
+                <input id="email" name="Email" class="form-control" type="email" required />
+                <span id="emailError" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label for="phoneNumber" class="form-label">
+                    <i class="fas fa-phone me-1"></i>Telefon
+                </label>
+                <input id="phoneNumber" name="PhoneNumber" class="form-control" type="tel" required />
+                <span id="phoneNumberError" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label for="universiteID" class="form-label">
+                    <i class="fas fa-university me-1"></i>Üniversite
+                </label>
+                <select id="universiteID" name="UniversiteID" class="form-control">
+                    <option value="">-- Üniversite Seçiniz --</option>
+                    @if (ViewBag.Universiteler != null)
+                    {
+                        @foreach (var item in (SelectList)ViewBag.Universiteler)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    }
+                </select>
+                <span id="universiteIDError" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label for="bolumID" class="form-label">
+                    <i class="fas fa-book me-1"></i>Bölüm
+                </label>
+                <select id="bolumID" name="BolumID" class="form-control">
+                    <option value="">-- Bölüm Seçiniz --</option>
+                    @if (ViewBag.Bolumler != null)
+                    {
+                        @foreach (var item in (SelectList)ViewBag.Bolumler)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    }
+                </select>
+                <span id="bolumIDError" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label for="departmanID" class="form-label">
+                    <i class="fas fa-graduation-cap me-1"></i>Departman
+                </label>
+                <select id="departmanID" name="DepartmanID" class="form-control" required>
+                    <option value="">-- Departman Seçiniz --</option>
+                    @if (ViewBag.DepartmanList != null)
+                    {
+                        @foreach (var item in (SelectList)ViewBag.DepartmanList)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    }
+                </select>
+                <span id="departmanIDError" class="text-danger"></span>
+                @if (ViewBag.DepartmanList == null || ((SelectList)ViewBag.DepartmanList).Count() <= 1)
+                {
+                    <small class="text-warning">
+                        <i class="fas fa-exclamation-triangle me-1"></i>
+                        Henüz departman bulunmuyor. Önce departman ekleyin.
+                    </small>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="mb-3">
+            <label for="email" class="form-label">
+                <i class="fas fa-sticky-note me-1"></i>Notlar
+            </label>
+            <input id="notes" name="Notes" class="form-control" type="notes" />
+            <span id="notesError" class="text-danger"></span>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label for="startDate" class="form-label">
+                    <i class="fas fa-calendar-alt me-1"></i>Başlangıç Tarihi
+                </label>
+                <input id="startDate" name="StartDate" class="form-control" type="date" required />
+                <span id="startDateError" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label for="endDate" class="form-label">
+                    <i class="fas fa-calendar-check me-1"></i>Bitiş Tarihi
+                </label>
+                <input id="endDate" name="EndDate" class="form-control" type="date" required />
+                <span id="endDateError" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-times me-1"></i>İptal
+        </button>
+        <!-- SPA için type="button" kullanıldı -->
+        <button type="button" id="saveStajerBtn" class="btn btn-success" onclick="saveStajer()">
+            <i class="fas fa-save me-1"></i>Kaydet
+        </button>
+    </div>
+</div>
+
+<script>
+// SPA Create fonksiyonu
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Create partial DOMContentLoaded çalıştı');
+    
+    // Kaydet butonu event listener'ı
+    const saveBtn = document.getElementById('saveStajerBtn');
+    if (saveBtn) {
+        console.log('Save button bulundu, event listener ekleniyor');
+        saveBtn.addEventListener('click', function() {
+            console.log('Save button tıklandı');
+            saveStajer();
+        });
+    } else {
+        console.error('Save button bulunamadı!');
+    }
+});
+
+// Stajer kaydetme fonksiyonu - AJAX ile (Global scope)
+window.saveStajer = async function() {
+    console.log('saveStajer fonksiyonu çağrıldı');
+    
+    // Form verilerini topla
+    const formData = {
+        FullName: document.getElementById('fullName').value,
+        Email: document.getElementById('email').value,
+        PhoneNumber: document.getElementById('phoneNumber').value,
+        UniversiteID: document.getElementById('universiteID').value || null,
+        BolumID: document.getElementById('bolumID').value || null,
+        DepartmanID: document.getElementById('departmanID').value,
+        StartDate: document.getElementById('startDate').value,
+        EndDate: document.getElementById('endDate').value
+    };
+    
+    // Validation kontrolü
+    if (!formData.FullName || !formData.Email || !formData.PhoneNumber || !formData.DepartmanID || !formData.StartDate || !formData.EndDate) {
+        showValidationError('Lütfen tüm zorunlu alanları doldurun.');
+        return;
+    }
+    
+    // Loading göster
+    const saveBtn = document.getElementById('saveStajerBtn');
+    const originalText = saveBtn.innerHTML;
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Kaydediliyor...';
+    saveBtn.disabled = true;
+    
+    try {
+        // Debug: Gönderilecek veriyi logla
+        console.log('Gönderilecek form verisi:', formData);
+        
+        // AJAX isteği gönder
+        const response = await fetch('/Stajers/Create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        console.log('Response status:', response.status);
+        console.log('Response ok:', response.ok);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        console.log('Response data:', result);
+        
+        if (result.success) {
+            // Başarılı - Modal kapat ve tabloyu güncelle
+            $('#form-modal').modal('hide');
+            loadStajers(); // Ana tabloyu yenile
+            
+            // Formu temizle
+            clearCreateForm();
+            
+            // Başarı mesajı göster
+            showSuccessMessage('Stajer başarıyla kaydedildi!');
+        } else {
+            // Hata mesajları göster
+            if (result.errors) {
+                showValidationErrors(result.errors);
+            } else {
+                showValidationError(result.message || 'Kaydetme sırasında hata oluştu.');
+            }
+        }
+        
+    } catch (error) {
+        console.error('Kaydetme hatası:', error);
+        showValidationError('Kaydetme sırasında hata oluştu: ' + error.message);
+    } finally {
+        // Loading'i gizle
+        saveBtn.innerHTML = originalText;
+        saveBtn.disabled = false;
+    }
+}
+
+// Validation hatalarını göster
+function showValidationErrors(errors) {
+    // Tüm hata mesajlarını temizle
+    clearValidationErrors();
+    
+    // Yeni hataları göster
+    if (errors) {
+        Object.keys(errors).forEach(field => {
+            const errorElement = document.getElementById(field + 'Error');
+            if (errorElement && errors[field] && errors[field].length > 0) {
+                errorElement.textContent = errors[field][0]; // İlk hatayı göster
+            }
+        });
+    }
+}
+
+// Validation hatalarını temizle
+function clearValidationErrors() {
+    document.querySelectorAll('[id$="Error"]').forEach(element => {
+        element.textContent = '';
+    });
+    document.getElementById('validationSummary').style.display = 'none';
+}
+
+// Genel validation hatası göster
+function showValidationError(message) {
+    const summary = document.getElementById('validationSummary');
+    summary.textContent = message;
+    summary.style.display = 'block';
+}
+
+// Başarı mesajı göster
+function showSuccessMessage(message) {
+    // Toast notification veya alert göster
+    alert(message); // Basit alert, daha sonra toast'a çevrilebilir
+}
+
+// Formu temizle
+function clearCreateForm() {
+    document.getElementById('createForm').reset();
+    clearValidationErrors();
+}
+
+// Üniversite seçimi değiştiğinde bölümleri güncelle
+document.addEventListener('DOMContentLoaded', function() {
+    const universiteSelect = document.getElementById('universiteID');
+    const bolumSelect = document.getElementById('bolumID');
+    
+    if (universiteSelect && bolumSelect) {
+        universiteSelect.addEventListener('change', function() {
+            const universiteId = this.value;
+            
+            // Bölüm dropdown'ını temizle
+            bolumSelect.innerHTML = '<option value="">-- Bölüm Seçiniz --</option>';
+            
+            if (universiteId) {
+                // AJAX ile bölümleri yükle
+                fetch(`/Stajers/GetBolumlerByUniversite/${universiteId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            data.bolumler.forEach(bolum => {
+                                const option = document.createElement('option');
+                                option.value = bolum.bolumID;
+                                option.textContent = bolum.bolumAdi;
+                                bolumSelect.appendChild(option);
+                            });
+                        } else {
+                            console.error('Bölümler yüklenirken hata:', data.message);
+                            showMessage('Bölümler yüklenirken hata oluştu: ' + data.message, 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('AJAX hatası:', error);
+                        showMessage('Bölümler yüklenirken hata oluştu', 'error');
+                    });
+            }
+        });
+    }
+});
+</script>

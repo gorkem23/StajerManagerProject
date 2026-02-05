@@ -1,0 +1,72 @@
+﻿@model StajerManager.Models.BolumModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>BolumModel</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.BolumAdi)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.BolumAdi)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.BolumKodu)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.BolumKodu)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Aciklama)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Aciklama)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Fakulte)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Fakulte)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.EgitimSuresi)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.EgitimSuresi)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.EgitimTuru)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.EgitimTuru)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.OlusturmaTarihi)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.OlusturmaTarihi)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Aktif)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Aktif)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Universite)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Universite.UniversiteAdi)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.BolumID">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

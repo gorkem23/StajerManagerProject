@@ -1,0 +1,63 @@
+﻿<div class="modal-header px-4 py-3 bg-danger text-white">
+    <h5 class="modal-title">
+        <i class="fas fa-exclamation-triangle me-2"></i>Hesabı Sil
+    </h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+
+<div class="modal-body px-4 py-4">
+    <div class="alert alert-danger mb-4">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        <strong>⚠️ DİKKAT!</strong><br>
+        Bu işlem geri alınamaz! Hesabınız ve tüm verileriniz kalıcı olarak silinecektir.
+    </div>
+
+    <div class="mb-4">
+        <label class="form-label">
+            <i class="fas fa-lock me-1"></i>Şifre
+        </label>
+        <input type="password" id="deletePassword" class="form-control" placeholder="Hesabınızı silmek için şifrenizi giriniz" />
+    </div>
+</div>
+
+<div class="modal-footer px-4 py-3">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+        <i class="fas fa-times me-1"></i>İptal
+    </button>
+    <button type="button" id="confirmDeleteBtn" class="btn btn-danger">
+        <i class="fas fa-trash me-1"></i>Hesabımı Sil
+    </button>
+</div>
+
+<script>
+$(document).ready(function() {
+    $('#confirmDeleteBtn').click(function() {
+        var password = $('#deletePassword').val();
+        if (!password) {
+            alert('Şifre gereklidir!');
+            return;
+        }
+        
+        if (!confirm('⚠️ Emin misiniz?\n\nBu işlem geri alınamaz! Hesabınız ve tüm verileriniz kalıcı olarak silinecektir.')) {
+            return;
+        }
+        
+        var btn = $(this);
+        var originalText = btn.html();
+        btn.html('<i class="fas fa-spinner fa-spin me-1"></i>Siliniyor...').prop('disabled', true);
+        
+        $.post('@Url.Action("DeleteAccount", "Account")', { password: password }, function(response) {
+            if (response.success) {
+                alert('Hesabınız başarıyla silindi!');
+                window.location.href = '@Url.Action("Index", "Home")';
+            } else {
+                alert('Hata oluştu');
+            }
+        }).fail(function() {
+            alert('Bir hata oluştu');
+        }).always(function() {
+            btn.html(originalText).prop('disabled', false);
+        });
+    });
+});
+</script>

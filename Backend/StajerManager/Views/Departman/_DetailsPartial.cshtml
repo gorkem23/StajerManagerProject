@@ -1,0 +1,74 @@
+@model StajerManager.Models.DepartmanModel
+
+<div class="row">
+    <div class="col-12">
+        <dl class="row">
+            <dt class="col-sm-4">
+                <i class="fas fa-building me-1"></i>Departman Adı:
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.DepartmanAdi)
+            </dd>
+            <dt class="col-sm-4">
+                <i class="fas fa-info-circle me-1"></i>Açıklama:
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.Aciklama)
+            </dd>
+            <dt class="col-sm-4">
+                <i class="fas fa-users me-1"></i>Stajer Sayısı:
+            </dt>
+            <dd class="col-sm-8">
+                <span class="badge bg-info fs-6">@Model.Stajers.Count</span>
+            </dd>
+        </dl>
+    </div>
+</div>
+
+@if (Model.Stajers.Any())
+{
+    <div class="mt-3">
+        <h6><i class="fas fa-user-graduate me-2"></i>Bu Departmandaki Stajerler</h6>
+        <div class="table-responsive">
+            <table class="table table-sm table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th><i class="fas fa-user me-1"></i>Ad Soyad</th>
+                        <th><i class="fas fa-envelope me-1"></i>E-mail</th>
+                        <th><i class="fas fa-phone me-1"></i>Telefon</th>
+                        <th><i class="fas fa-university me-1"></i>Üniversite</th>
+                        <th><i class="fas fa-book me-1"></i>Bölüm</th>
+                        <th><i class="fas fa-calendar-alt me-1"></i>Başlangıç</th>
+                        <th><i class="fas fa-calendar-check me-1"></i>Bitiş</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var stajer in Model.Stajers)
+                    {
+                        <tr>
+                            <td>@stajer.FullName</td>
+                            <td>@stajer.Email</td>
+                            <td>@stajer.PhoneNumber</td>
+                            <td>@stajer.Universite?.UniversiteAdi</td>
+                            <td>@stajer.Bolum?.BolumAdi</td>
+                            <td>@stajer.StartDate.ToString("dd.MM.yyyy")</td>
+                            <td>@stajer.EndDate.ToString("dd.MM.yyyy")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-info mt-3">
+        <i class="fas fa-info-circle me-2"></i>Bu departmanda henüz stajer bulunmuyor.
+    </div>
+}
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+        <i class="fas fa-times me-1"></i>Kapat
+    </button>
+</div>

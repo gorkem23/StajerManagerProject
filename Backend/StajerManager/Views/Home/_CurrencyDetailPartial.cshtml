@@ -1,0 +1,108 @@
+﻿
+    <div id="coinModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="modalContent">
+                <div class="coin-header">
+                    <img src="${coin.image}" alt="${coin.name}" class="coin-icon" onerror="this.style.display='none'">
+                    <div class="coin-title">
+                        <h2>${coin.name}</h2>
+                        <p>${coin.symbol.toUpperCase()}</p>
+                    </div>
+                </div>
+
+                <div class="coin-details">
+                    <div class="detail-item">
+                        <div class="detail-label">💰 Güncel Fiyat</div>
+                        <div class="detail-value">$${coin.current_price?.toLocaleString() || 'N/A'}</div>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="detail-label">${changeIcon} 24 Saatlik Değişim</div>
+                        <div class="detail-value ${changeClass}">${coin.price_change_percentage_24h?.toFixed(2) || '0.00'}%</div>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="detail-label">💎 Market Cap</div>
+                        <div class="detail-value">$${coin.market_cap ? (coin.market_cap / 1000000000).toFixed(1) + 'B' : 'N/A'}</div>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="detail-label">📊 Market Cap Rank</div>
+                        <div class="detail-value">#${coin.market_cap_rank || 'N/A'}</div>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="detail-label">🔄 24h Hacim</div>
+                        <div class="detail-value">$${coin.total_volume ? (coin.total_volume / 1000000000).toFixed(1) + 'B' : 'N/A'}</div>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="detail-label">🕒 Son Güncelleme</div>
+                        <div class="detail-value">${new Date(coin.last_updated).toLocaleString('tr-TR')}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+        function selectCoin(index) {
+        console.log(`Coin ${index + 1} seçildi!`);
+
+        // Seçilen coin'i vurgula
+        const buttons = document.querySelectorAll('button');
+        buttons.forEach(btn => btn.style.backgroundColor = 'transparent');
+
+        if (buttons[index]) {
+            buttons[index].style.backgroundColor = '#e3f2fd';
+            //buttons[index].style.border = '2px solidrgb(25, 116, 191)';
+            setTimeout(() => {
+                buttons[index].style.backgroundColor = '';
+              }, 2000);
+
+        }
+
+        // Coin bilgilerini popup'ta göster
+        fetchCryptoData().then(data => {
+            if (data && data.length > index) {
+                const coin = data[index];
+                showCoinModal(coin);
+            }
+        });
+    }
+
+        function showCoinModal(coin) {
+        const modal = document.getElementById('coinModal');
+        const modalContent = document.getElementById('modalContent');
+
+        const changeClass = coin.price_change_percentage_24h >= 0 ? 'positive' : 'negative';
+        const changeIcon = coin.price_change_percentage_24h >= 0 ? '📈' : '📉';
+
+        modal.style.display = 'block';
+    }
+
+        document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('coinModal');
+        const closeBtn = document.getElementsByClassName('close')[0];
+
+        // X butonuna tıklayınca kapat
+        closeBtn.onclick = function() {
+            modal.style.display = 'none';
+        }
+
+        // Modal dışına tıklayınca kapat
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // ESC tuşuna basınca kapat
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && modal.style.display === 'block') {
+                modal.style.display = 'none';
+            }
+        });
+    });
+</script>

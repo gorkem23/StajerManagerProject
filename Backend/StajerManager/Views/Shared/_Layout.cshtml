@@ -1,0 +1,173 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - StajerManager</title>
+    <script type="importmap"></script>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/StajerManager.styles.css" asp-append-version="true" />
+
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">StajerManager</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Stajers" asp-action="Index">
+                                    <i class="fas fa-user-graduate me-1"></i>Stajerler
+                                </a>
+                            </li>
+                        }
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Departman" asp-action="Index">
+                                    <i class="fas fa-building me-1"></i>Departmanlar
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <div class="navbar-nav ms-auto">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <span class="navbar-text me-3">
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <span class="badge bg-danger me-2">
+                                    <i class="fas fa-crown me-1"></i>Admin
+                                </span>
+                            }
+                            <i class="fas fa-user me-1"></i>Hoş geldin, @User.Identity.Name
+                        </span>
+                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                <i class="fas fa-sign-out-alt me-1"></i>Çıkış Yap
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a class="btn btn-outline-primary me-2" asp-controller="Account" asp-action="Login">
+                            <i class="fas fa-sign-in-alt me-1"></i>Giriş Yap
+                        </a>
+                        <a class="btn btn-primary" asp-controller="Account" asp-action="Register">
+                            <i class="fas fa-user-plus me-1"></i>Kayıt Ol
+                        </a>
+                    }
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <!-- Sayfa Mesaj Alanı -->
+        <div id="page-messages" class="mb-3">
+            <!-- Mesajlar buraya gelecek -->
+        </div>
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2025 - StajerManager - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+
+    <!-- Mesaj Modal -->
+    <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" id="modalHeader">
+                    <h5 class="modal-title" id="messageModalLabel">
+                        <i class="fas fa-info-circle me-2"></i>Bilgi
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalBody">
+                    <!-- Mesaj içeriği buraya gelecek -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+                        <i class="fas fa-check me-1"></i>Tamam
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    
+    <!-- TempData Mesajları için Modal Script -->
+    <script>
+        $(document).ready(function() {
+            // TempData mesajlarını kontrol et
+            @if (TempData["Message"] != null)
+            {
+                <text>
+                showMessage('@Html.Raw(TempData["Message"])', 'success');
+                </text>
+            }
+            
+            @if (TempData["Error"] != null)
+            {
+                <text>
+                showMessage('@Html.Raw(TempData["Error"])', 'error');
+                </text>
+            }
+        });
+
+        function showMessage(message, type) {
+            var modal = $('#messageModal');
+            var modalHeader = $('#modalHeader');
+            var modalTitle = $('#messageModalLabel');
+            var modalBody = $('#modalBody');
+            
+            // Mesaj tipine göre stil ayarla
+            if (type === 'success') {
+                modalHeader.removeClass('bg-danger bg-warning').addClass('bg-success text-white');
+                modalTitle.html('<i class="fas fa-check-circle me-2"></i>Başarılı!');
+                modalBody.html('<div class="alert alert-success mb-0"><i class="fas fa-envelope-open-text me-2"></i>' + message + '</div>');
+            } else if (type === 'error') {
+                modalHeader.removeClass('bg-success bg-warning').addClass('bg-danger text-white');
+                modalTitle.html('<i class="fas fa-exclamation-triangle me-2"></i>Hata!');
+                modalBody.html('<div class="alert alert-danger mb-0"><i class="fas fa-times-circle me-2"></i>' + message + '</div>');
+            } else {
+                modalHeader.removeClass('bg-success bg-danger').addClass('bg-warning text-dark');
+                modalTitle.html('<i class="fas fa-info-circle me-2"></i>Bilgi');
+                modalBody.html('<div class="alert alert-info mb-0"><i class="fas fa-info-circle me-2"></i>' + message + '</div>');
+            }
+            
+            // Modal'ı göster
+            modal.modal('show');
+        }
+    </script>
+    
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

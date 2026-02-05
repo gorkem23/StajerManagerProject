@@ -1,0 +1,346 @@
+@model IEnumerable<StajerManager.Models.StajerModel>
+
+@{
+
+    ViewData["Title"] = "Index";
+
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="text-center mb-4">
+                <i class="fas fa-user-graduate text-success me-2"></i>
+                STAJERLER
+            </h1>
+        </div>
+    </div>
+
+    @if (User.IsInRole("Admin"))
+    {
+        <div class="row mb-3">
+            <div class="col-12">
+                <a onclick="showPopup('@Url.Action("Create", "Stajers")', 'Yeni Stajer Ekle')" href="javascript:void(0)" class="btn btn-success">
+                    <i class="fas fa-plus me-1"></i>Yeni Stajer Ekle
+                </a>
+            </div>
+        </div>
+    }
+
+    <!-- Arama ve Filtreleme Paneli -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <!-- Arama Kutusu -->
+                        <div class="col-md-8">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                                <input type="text"
+                                       id="searchInput"
+                                       class="form-control"
+                                       placeholder="Ad, soyad, email, telefon, üniversite, bölüm veya departman ara...">
+                            </div>
+                        </div>
+
+                        <!-- Butonlar -->
+                        <div class="col-md-4">
+                            <div class="btn-group w-100" role="group">
+                                <button type="button" id="searchBtn" class="btn btn-primary">
+                                    <i class="fas fa-search me-1"></i>Ara
+                                </button>
+                                <button type="button" id="clearBtn" class="btn btn-secondary">
+                                    <i class="fas fa-times me-1"></i>Temizle
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Arama sonuçları bilgisi - SPA Versiyonu -->
+<div id="searchResults" class="alert alert-info mb-3" style="display: none;">
+    <i class="fas fa-info-circle me-2"></i>
+    "<strong id="searchTerm"></strong>" için arama sonuçları: 
+    <span class="badge bg-primary" id="resultCount">0</span> stajer bulundu.
+    <button type="button" id="clearSearchBtn" class="btn btn-sm btn-outline-secondary ms-2">
+        <i class="fas fa-times me-1"></i>Aramayı Temizle
+    </button>
+</div>
+
+<!-- Loading Spinner -->
+<div id="loadingSpinner" class="text-center mb-3" style="display: none;">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Yükleniyor...</span>
+    </div>
+    <p class="mt-2">Veriler yükleniyor...</p>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>
+                    <a href="javascript:void(0)" onclick="sortTable('StajerID')" class="text-white text-decoration-none">
+                        <i class="fa-solid fa-ranking-star"></i>Creation
+                        <i id="sort-StajerID" class="fas fa-sort ms-1"></i>
+                    </a>
+                </th>
+                <th>
+                    <a href="javascript:void(0)" onclick="sortTable('FullName')" class="text-white text-decoration-none">
+                        <i class="fas fa-user me-1"></i>Ad Soyad
+                        <i id="sort-FullName" class="fas fa-sort ms-1"></i>
+                    </a>
+                </th>
+                <th>
+                    <i class="fas fa-envelope me-1"></i>@Html.DisplayNameFor(model => model.Email)
+                </th>
+                <th>
+                    <i class="fas fa-phone me-1"></i>@Html.DisplayNameFor(model => model.PhoneNumber)
+                </th>
+                <th>
+                    <a href="javascript:void(0)" onclick="sortTable('Universite')" class="text-white text-decoration-none">
+                        <i class="fas fa-university me-1"></i>Üniversite
+                        <i id="sort-Universite" class="fas fa-sort ms-1"></i>
+                    </a>
+                </th>
+                <th>
+                    <a href="javascript:void(0)" onclick="sortTable('Bolum')" class="text-white text-decoration-none">
+                        <i class="fas fa-book me-1"></i>Bölüm
+                        <i id="sort-Bolum" class="fas fa-sort ms-1"></i>
+                    </a>
+                </th>
+                <th>
+                    <a href="javascript:void(0)" onclick="sortTable('Departman')" class="text-white text-decoration-none">
+                        <i class="fas fa-graduation-cap me-1"></i>Departman
+                        <i id="sort-Departman" class="fas fa-sort ms-1"></i>
+                    </a>
+                </th>
+                <th>
+                    <a href="javascript:void(0)" onclick="sortTable('StartDate')" class="text-white text-decoration-none">
+                        <i class="fas fa-calendar-alt me-1"></i>Başlangıç
+                        <i id="sort-StartDate" class="fas fa-sort ms-1"></i>
+                    </a>
+                </th>
+                <th>
+                    <a href="javascript:void(0)" onclick="sortTable('EndDate')" class="text-white text-decoration-none">
+                        <i class="fas fa-calendar-check me-1"></i>Bitiş
+                        <i id="sort-EndDate" class="fas fa-sort ms-1"></i>
+                    </a>
+                </th>
+                <th class="text-center">
+                    <i class="fas fa-cogs me-1"></i>İşlemler
+                </th>
+            </tr>
+        </thead>
+        <tbody id="stajersTableBody">
+            <!-- AJAX ile doldurulacak -->
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="form-modal" tabindex="-1" aria-labelledby="form-modal-title" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="form-modal-title"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript - SPA Fonksiyonları -->
+<script>
+// Global değişkenler
+let currentSortBy = 'StajerID';
+let currentSortOrder = 'desc';
+let currentSearchText = '';
+
+// Sayfa yüklendiğinde ilk verileri çek
+document.addEventListener('DOMContentLoaded', function() {
+    loadStajers();
+    
+    // Event listeners
+    document.getElementById('searchBtn').addEventListener('click', searchStajers);
+    document.getElementById('clearBtn').addEventListener('click', clearSearch);
+    document.getElementById('clearSearchBtn').addEventListener('click', clearSearch);
+    
+    // Enter tuşu ile arama
+    document.getElementById('searchInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            searchStajers();
+        }
+    });
+});
+
+// Stajerleri yükle
+async function loadStajers() {
+    try {
+        showLoading(true);
+        console.log('Stajerler yükleniyor...');
+
+        const response = await fetch(`/Stajers/GetStajers?sortBy=${currentSortBy}&sortOrder=${currentSortOrder}&searchText=${encodeURIComponent(currentSearchText)}`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Stajer verisi alındı:', data);
+
+        if (data.stajers) {
+            updateTable(data.stajers);
+            updateSearchResults(data);
+            updateSortIcons(data.sortBy, data.sortOrder);
+
+            // Global değişkenleri güncelle
+            currentSortBy = data.sortBy;
+            currentSortOrder = data.sortOrder;
+            currentSearchText = data.searchText || '';
+        } else {
+            console.error('Stajer verisi bulunamadı:', data);
+            showErrorMessage('Stajer verileri yüklenemedi.');
+        }
+    } catch (error) {
+        console.error('Stajer yükleme hatası:', error);
+        showErrorMessage('Stajerler yüklenirken hata oluştu: ' + error.message);
+    } finally {
+        showLoading(false);
+    }
+}
+
+// Tabloyu güncelle
+function updateTable(stajers) {
+    const tbody = document.getElementById('stajersTableBody');
+    tbody.innerHTML = '';
+    
+    stajers.forEach(stajer => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td><span class="badge bg-secondary">${stajer.stajerID}</span></td>
+            <td>${stajer.fullName}</td>
+            <td>${stajer.email}</td>
+            <td>${stajer.phoneNumber}</td>
+            <td>${stajer.universite?.universiteAdi || '-'}</td>
+            <td>${stajer.bolum?.bolumAdi || '-'}</td>
+            <td>${stajer.departman?.departmanAdi || '-'}</td>
+            <td>${formatDate(stajer.startDate)}</td>
+            <td>${formatDate(stajer.endDate)}</td>
+            <td class="text-center">
+                <div class="btn-group" role="group">
+                    <a onclick="showPopup('/Stajers/Details/${stajer.stajerID}', 'Stajer Detayları')" href="javascript:void(0)" class="btn btn-info btn-sm" title="Detaylar">
+                        <i class="fas fa-eye"></i>
+                    </a>
+                    @if (User.IsInRole("Admin")){
+                        <a onclick="showPopup('/Stajers/Edit/${stajer.stajerID}', 'Stajer Düzenle')" href="javascript:void(0)" class="btn btn-warning btn-sm" title="Düzenle">
+                            <i class="fas fa-edit"></i>
+                        </a>   
+                        <a onclick="showPopup('/Stajers/Delete/${stajer.stajerID}', 'Stajer Sil')" href="javascript:void(0)" class="btn btn-danger btn-sm" title="Kaldır">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    }
+                </div>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+// Arama sonuçlarını güncelle
+function updateSearchResults(data) {
+    const searchResults = document.getElementById('searchResults');
+    const searchTerm = document.getElementById('searchTerm');
+    const resultCount = document.getElementById('resultCount');
+    
+    if (data.searchText && data.searchText.trim() !== '') {
+        searchTerm.textContent = data.searchText;
+        resultCount.textContent = data.totalCount;
+        searchResults.style.display = 'block';
+    } else {
+        searchResults.style.display = 'none';
+    }
+}
+
+// Sıralama ikonlarını güncelle
+function updateSortIcons(sortBy, sortOrder) {
+    // Tüm sıralama ikonlarını sıfırla
+    document.querySelectorAll('[id^="sort-"]').forEach(icon => {
+        icon.className = 'fas fa-sort ms-1';
+    });
+    
+    // Aktif sıralama ikonunu güncelle
+    const activeIcon = document.getElementById(`sort-${sortBy}`);
+    if (activeIcon) {
+        activeIcon.className = `fas fa-sort-${sortOrder === 'asc' ? 'up' : 'down'} ms-1`;
+    }
+}
+
+// Sıralama fonksiyonu
+function sortTable(column) {
+    if (currentSortBy === column) {
+        // Aynı kolona tıklandıysa yönü değiştir
+        currentSortOrder = currentSortOrder === 'asc' ? 'desc' : 'asc';
+    } else {
+        // Farklı kolona tıklandıysa yeni kolon ve asc yön
+        currentSortBy = column;
+        currentSortOrder = 'asc';
+    }
+    
+    loadStajers();
+}
+
+// Arama fonksiyonu
+function searchStajers() {
+    currentSearchText = document.getElementById('searchInput').value;
+    loadStajers();
+}
+
+// Arama temizleme fonksiyonu
+function clearSearch() {
+    currentSearchText = '';
+    document.getElementById('searchInput').value = '';
+    loadStajers();
+}
+
+// Loading spinner göster/gizle
+function showLoading(show) {
+    const spinner = document.getElementById('loadingSpinner');
+    const table = document.querySelector('.table-responsive');
+    
+    if (show) {
+        spinner.style.display = 'block';
+        table.style.opacity = '0.5';
+    } else {
+        spinner.style.display = 'none';
+        table.style.opacity = '1';
+    }
+}
+
+// Tarih formatla
+function formatDate(dateString) {
+    if (!dateString) return '-';
+    try {
+        // DateOnly formatını handle et
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) {
+            return dateString; // Eğer tarih parse edilemezse orijinal string'i döndür
+        }
+        return date.toLocaleDateString('tr-TR');
+    } catch (error) {
+        console.error('Tarih formatlama hatası:', error);
+        return dateString;
+    }
+}
+</script>

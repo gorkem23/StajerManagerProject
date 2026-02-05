@@ -1,0 +1,63 @@
+@model StajerManager.Models.DepartmanModel
+
+<div class="row">
+    <div class="col-12">
+        <div class="alert alert-warning" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>Dikkat!</strong> Bu departmanı silmek istediğinizden emin misiniz?
+        </div>
+
+        <dl class="row">
+            <dt class="col-sm-4">
+                <i class="fas fa-building me-1"></i>Departman Adı:
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.DepartmanAdi)
+            </dd>
+            <dt class="col-sm-4">
+                <i class="fas fa-info-circle me-1"></i>Açıklama:
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.Aciklama)
+            </dd>
+            <dt class="col-sm-4">
+                <i class="fas fa-users me-1"></i>Stajer Sayısı:
+            </dt>
+            <dd class="col-sm-8">
+                <span class="badge bg-info fs-6">@Model.Stajers.Count</span>
+            </dd>
+        </dl>
+
+        @if (Model.Stajers.Any())
+        {
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Uyarı!</strong> Bu departmanda @Model.Stajers.Count adet stajer bulunmaktadır. 
+                Departmanı silmek için önce bu stajerleri başka bir departmana taşımanız gerekmektedir.
+            </div>
+        }
+    </div>
+</div>
+
+<form asp-action="Delete" method="post" onsubmit="return false;">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="DepartmanID" />
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-times me-1"></i>İptal
+        </button>
+        @if (!Model.Stajers.Any())
+        {
+            <button type="button" id="deleteDepartmanBtn" class="btn btn-danger" onclick="deleteDepartman(@Model.DepartmanID)">
+                <i class="fas fa-trash me-1"></i>Sil
+            </button>
+        }
+        else
+        {
+            <button type="submit" class="btn btn-danger" disabled>
+                <i class="fas fa-trash me-1"></i>Sil (Stajerler var)
+            </button>
+        }
+    </div>
+</form>
